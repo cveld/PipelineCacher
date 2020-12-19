@@ -1,0 +1,15 @@
+﻿@using Entities
+<h3>Add</h3>
+
+<button @onclick="AddClicked">Add</button>
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    void AddClicked()
+    {
+        BlazoredModal.Close(ModalResult.Ok(new Organization
+        {
+            Name = "Test"
+        }));
+    }
+}

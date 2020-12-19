@@ -1,0 +1,42 @@
+﻿@page "/migrationsutility"
+@inject HttpClient Http
+
+<h3>Migrations Utility</h3>
+
+<h4>Pending migrations</h4>
+@if (pendingMigrations == null) {
+    <div class="spinner-border spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else {
+    <ul>
+        @foreach (var s in pendingMigrations)
+        {
+            <li>@s</li>    
+        }
+    </ul>
+}
+
+<button @onclick="ApplyMigrationsClicked" class="btn btn-primary">Apply migrations</button>
+@code {
+    string[] pendingMigrations;
+    protected override async Task OnInitializedAsync()
+    {
+        await Fetch();
+    }
+
+    async Task Fetch()
+    {
+        pendingMigrations = await Http.GetFromJsonAsync<string[]>("api/MigrationsUtility");
+    }
+
+    async Task ApplyMigrationsClicked()
+    {
+        var result = await Http.PostAsync("api/MigrationsUtility/ApplyMigrations", null);
+        if (result.IsSuccessStatusCode)
+        {
+            pendingMigrations = await result.Content.ReadFromJsonAsync<string[]>();
+        }
+    }
+}

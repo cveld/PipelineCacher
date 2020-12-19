@@ -1,0 +1,16 @@
+﻿<h3>Confirmation</h3>
+<button @onclick="YesClicked" class="btn btn-primary">Yes</button>
+<button @onclick="NoClicked" class="btn btn-primary">No</button>
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    void YesClicked()
+    {
+        BlazoredModal.Close();
+    }
+
+    void NoClicked()
+    {
+        BlazoredModal.Cancel();
+    }
+}

@@ -1,0 +1,73 @@
+﻿@using PipelineCacher.Client.Models
+@page "/Organizations"
+<h3>Organizations</h3>
+
+@if (organizations_loadingStatus == RestCallStatusEnum.NotStarted || organizations_loadingStatus == RestCallStatusEnum.Getting)
+{
+    <p><em>Loading...</em></p>
+}
+
+@if (organizations_loadingStatus == RestCallStatusEnum.Failed)
+{
+    <p>Loading of organizations failed. <button>Retry</button></p>
+}
+
+@if (organizations_loadingStatus == RestCallStatusEnum.Ok)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var organization in organizations)
+            {
+                RestCallStatusEnum status;
+                if (!organization_loadingStatus.TryGetValue(organization, out status))
+                {
+                    status = RestCallStatusEnum.NotStarted;
+                }
+                <tr>
+                    <td>@organization.Name</td>
+                    <td>
+                        <a href="/EditAccount/" @onclick:preventDefault class="btn btn-info@(status == RestCallStatusEnum.NotStarted ? "" : " disabled")">Edit</a>
+                        <a href="#" @onclick:preventDefault @onclick="() => DeleteOrganization(organization)" class="btn btn-danger@(status == RestCallStatusEnum.NotStarted || status == RestCallStatusEnum.Ok ? "" : " disabled")">
+                            @if (status == RestCallStatusEnum.Deleting)
+                            {                             
+                                <span class="spinner-border spinner-border-sm" role="status">
+                                    <span class="sr-only">Deleting...</span>
+                                </span>
+                            }
+                            Delete
+                        </a>
+                        
+                    </td>
+                    <td>
+                        @status
+                    </td>
+                </tr>
+            
+            }
+        </tbody>
+    </table>
+
+    <p>@ResultMessage</p>
+
+<button @onclick="@AddOrganization" class="btn btn-primary" disabled="@(addOrganization_loadingStatus == RestCallStatusEnum.Posting)">
+    @if (addOrganization_loadingStatus == RestCallStatusEnum.Posting)
+    {
+        <span class="spinner-border spinner-border-sm" role="status">
+            <span class="sr-only">Adding...</span>
+        </span>
+    }
+    Add
+</button>
+
+}
+
+@code {
+
+}
