@@ -5,11 +5,11 @@ namespace PipelineCacher.Shared.Commands
     public class CreatePipelineContextCommand
     {
         [Required]
-        public int Pat { get; set; }
+        public int? PatId { get; set; }
         [Required]
         public string Environment { get; set; }
         [Required]
-        public int PipelineId { get; set; }
+        public int? PipelineId { get; set; }
         [Required]
         public string TargetBranch { get; set; }
     }

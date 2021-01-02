@@ -19,5 +19,6 @@ namespace PipelineCacher.Entities
         public string ProjectName { get; set; }
         public int AzdoId { get; set; }        
         public string RepositoryId { get; set; }
+        public string YamlPath { get; set; }       
     }
 }

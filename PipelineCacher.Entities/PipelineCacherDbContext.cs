@@ -17,6 +17,7 @@ namespace PipelineCacher.Entities
         public DbSet<PipelineContext> PipelineContexts { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<AuditLog> AuditLog { get; set; }
+        public DbSet<Sourcecode> Sourcecode { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

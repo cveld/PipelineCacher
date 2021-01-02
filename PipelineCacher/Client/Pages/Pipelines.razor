@@ -1,0 +1,31 @@
+﻿@page "/Pipelines/{id?}"
+<h3>Pipelines</h3>
+
+<p>
+    POC / MVP to display one particular pipeline.
+</p>
+<p>
+    <ol>
+        <li>Get fresh pipeline definition, repository items and dependencies.</li>
+        <li>
+            Display stage statuses: green, yellow, red, grey.
+            <ul>
+                <li>Green = stage has run successfully or has been validated (either manually, or automatically)</li>
+                <li>Yellow = stage dependencies have changed and could not be validated automatically</li>
+                <li>Red = stage has run and has failed</li>
+                <li>Grey = Fresh stage. Not yet run or validated.</li>
+            </ul>
+        </li>
+    </ol>
+</p>
+<p>
+    <span class="oi oi-circle-check green" aria-hidden="true"></span>
+    <span class="oi oi-warning yellow" aria-hidden="true"></span>
+    <span class="oi oi-circle-x red" aria-hidden="true"></span>
+    <span class="oi oi-target grey" aria-hidden="true"></span>
+</p>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+}

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text;
 
 namespace PipelineCacher.Entities
@@ -14,8 +15,8 @@ namespace PipelineCacher.Entities
     {
         public int Id { get; set; }
         public Pipeline Pipeline { get; set; }
-        public List<string> Stages { get; set; }
-        public Dictionary<string, string> Parameters { get; set; }
+        public ImmutableList<string> Stages { get; set; }
+        public ImmutableDictionary<string, string> Parameters { get; set; }
         /// <summary>
         /// Revision number of the Azure Pipelines pipeline definition
         /// </summary>
@@ -29,13 +30,13 @@ namespace PipelineCacher.Entities
             builder.Property(e => e.Parameters)
                 .HasConversion(v => JsonConvert.SerializeObject(v),
                 v => v == null
-                    ? new Dictionary<string, string>() // fallback
-                    : JsonConvert.DeserializeObject<Dictionary<string, string>>(v));
+                    ? ImmutableDictionary<string, string>.Empty // fallback
+                    : JsonConvert.DeserializeObject<ImmutableDictionary<string, string>>(v));
             builder.Property(e => e.Stages)
                 .HasConversion(v => JsonConvert.SerializeObject(v),
                 v => v == null
-                    ? new List<string>() // fallback
-                    : JsonConvert.DeserializeObject<List<string>>(v));
+                    ? ImmutableList<string>.Empty // fallback
+                    : JsonConvert.DeserializeObject<ImmutableList<string>>(v));
 
         }
     }

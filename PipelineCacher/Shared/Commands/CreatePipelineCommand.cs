@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace PipelineCacher.Shared
+namespace PipelineCacher.Shared.Commands
 {
-    public class PipelinePostModel
+    public class CreatePipelineCommand
     {
         [Required]
         public string OrganizationName { get; set; }
