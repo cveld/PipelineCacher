@@ -15,9 +15,15 @@ namespace PipelineCacher.Shared.Utilities
             using (var writer = new StringWriter(buffer))
             {
                 stream.Save(writer, assignAnchors: false);
-                return writer.ToString();
+                var s = writer.ToString();
+                // workaround for a limitation in the yaml.net library. it unnecessarily emits an expicit document marker "...\r\n"
+                // which we try to detect and remove
+                if (s.Substring(s.Length - 5) == "...\r\n")
+                {
+                    s = s.Substring(0, s.Length - 5);
+                }
+                return s;
             }
-
         }
     }
 }

@@ -6,6 +6,9 @@
         NotRun,
         Validated,
         RunSuccessfully,
-        RunFailed
+        RunSuccessfullyWithIssues,
+        RunFailed,
+        RunAbandoned,
+        RunCanceled
     }
 }

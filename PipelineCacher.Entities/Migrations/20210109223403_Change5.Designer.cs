@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PipelineCacher.Entities;
 
 namespace PipelineCacher.Entities.Migrations
 {
     [DbContext(typeof(PipelineCacherDbContext))]
-    partial class PipelineCacherContextModelSnapshot : ModelSnapshot
+    [Migration("20210109223403_Change5")]
+    partial class Change5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,9 +106,6 @@ namespace PipelineCacher.Entities.Migrations
                     b.Property<string>("RepositoryId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Revision")
-                        .HasColumnType("int");
-
                     b.Property<string>("YamlPath")
                         .HasColumnType("nvarchar(max)");
 
@@ -182,9 +181,6 @@ namespace PipelineCacher.Entities.Migrations
 
                     b.Property<int>("Revision")
                         .HasColumnType("int");
-
-                    b.Property<string>("SourcecodeTree")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Stages")
                         .HasColumnType("nvarchar(max)");

@@ -9,16 +9,20 @@ using System.Text;
 namespace PipelineCacher.Entities
 {
     /// <summary>
-    /// A specific snapshot of a pipeline
+    /// A specific snapshot of a pipeline run. There is a precise relationship one-to-one with an Azure Pipelines run
     /// </summary>
     public class PipelineState : IEntityTypeConfiguration<PipelineState>
     {
         public int Id { get; set; }
-        public Pipeline Pipeline { get; set; }
-        public ImmutableList<string> Stages { get; set; }
+        public Pipeline Pipeline { get; set; }        
+        public string Branch { get; set; }
+        public string Commit { get; set; }
+        public string YamlPath { get; set; }
+        public ImmutableList<Stage> Stages { get; set; }
+        public SourcecodeTree SourcecodeTree { get; set; }
         public ImmutableDictionary<string, string> Parameters { get; set; }
         /// <summary>
-        /// Revision number of the Azure Pipelines pipeline definition
+        /// Revision number of the Azure Pipelines pipeline definition when the pipeline was run
         /// </summary>
         public int Revision { get; set; }
         public int AzdoBuildId { get; set; }
@@ -35,9 +39,13 @@ namespace PipelineCacher.Entities
             builder.Property(e => e.Stages)
                 .HasConversion(v => JsonConvert.SerializeObject(v),
                 v => v == null
-                    ? ImmutableList<string>.Empty // fallback
-                    : JsonConvert.DeserializeObject<ImmutableList<string>>(v));
-
+                    ? ImmutableList<Stage>.Empty // fallback
+                    : JsonConvert.DeserializeObject<ImmutableList<Stage>>(v));
+            builder.Property(e => e.SourcecodeTree)
+                .HasConversion(v => JsonConvert.SerializeObject(v),
+                v => v == null
+                    ? new SourcecodeTree() // fallback
+                    : JsonConvert.DeserializeObject<SourcecodeTree>(v));
         }
     }
 }

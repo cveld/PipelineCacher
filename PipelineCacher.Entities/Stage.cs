@@ -5,12 +5,11 @@ using System.Text;
 
 namespace PipelineCacher.Entities
 {
-    [Keyless]
-    public class Stage
-    {
-        public string Content { get; set; }
-        public int? PipelineRunId { get; set; }
-        public DateTime? ValidationTimestamp { get; set; }
-        public StatusEnum Status { get; set; }
+    public record Stage
+    { 
+        public string Content { get; init; }
+        public int? PipelineRunId { get; init; }
+        public DateTime? ValidationTimestamp { get; init; }
+        public StatusEnum Status { get; init; }
     }
 }

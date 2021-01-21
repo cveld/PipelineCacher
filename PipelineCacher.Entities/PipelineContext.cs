@@ -18,6 +18,7 @@ namespace PipelineCacher.Entities
     {
         public int Id { get; set; }
         public Pipeline Pipeline { get; set; }
+        // TODO; refactor stuff from PipelineContext into PipelineState
         public PipelineState PipelineState { get; set; }
         public SourcecodeTree SourcecodeTree { get; set; }
         public ImmutableList<Stage> Stages { get; set; }

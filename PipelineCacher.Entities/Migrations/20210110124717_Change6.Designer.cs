@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PipelineCacher.Entities;
 
 namespace PipelineCacher.Entities.Migrations
 {
     [DbContext(typeof(PipelineCacherDbContext))]
-    partial class PipelineCacherContextModelSnapshot : ModelSnapshot
+    [Migration("20210110124717_Change6")]
+    partial class Change6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -15,6 +15,7 @@ namespace PipelineCacher.Entities
         public DbSet<Pat> Pats { get; set; }
         public DbSet<Pipeline> Pipelines { get; set; }
         public DbSet<PipelineContext> PipelineContexts { get; set; }
+        public DbSet<PipelineState> PipelineStates { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<AuditLog> AuditLog { get; set; }
         public DbSet<Sourcecode> Sourcecode { get; set; }
