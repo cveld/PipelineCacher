@@ -417,8 +417,7 @@ namespace PipelineCacher.Server.Controllers
 
         }
 
-        [HttpPost("{id}/contexts/{contextid}/parameters")]
-        public async Task<object> SetPipelineContextParameters(int id, int contextid, SetPipelineContextParametersCommand command)
+        async Task<(Pipeline, PipelineContext)> QueryPipelineAndPipelineContextAsync(int id, int contextid)
         {
             var pipeline = await context.Pipelines.FindAsync(id);
             if (pipeline == null)
@@ -434,6 +433,13 @@ namespace PipelineCacher.Server.Controllers
             {
                 throw new ArgumentException($"Pipeline {id} does not match with pipeline context {contextid}");
             }
+            return (pipeline, pipelineContext);
+        }
+
+        [HttpPost("{id}/contexts/{contextid}/parameters")]
+        public async Task<object> SetPipelineContextParameters(int id, int contextid, SetPipelineContextParametersCommand command)
+        {
+            (var pipeline, var pipelineContext) = await QueryPipelineAndPipelineContextAsync(id, contextid);
 
             pipelineContext.Parameters = ImmutableDictionary<string, string>.Empty;
             if (command.Parameters == null)
@@ -516,6 +522,32 @@ namespace PipelineCacher.Server.Controllers
                 Definition = definition
             });
             
+        }
+
+        /// <summary>
+        /// Brings back the PipelineContext to a clean state
+        /// Only the pipeline definition including stage dependencies are kept
+        /// Any results of processed pipeline runs (PipelineState records) are removed
+        /// </summary>
+        [HttpPost("{id}/contexts/{contextid}/clearstagesstatus")]
+        public async Task<object> ClearPipelineContextStagesStatusAsync(int id, int contextid)
+        {
+            (var pipeline, var pipelineContext) = await QueryPipelineAndPipelineContextAsync(id, contextid);
+            for (int i = 0; i < pipelineContext.Stages.Count; i++)
+            {
+                var stage = pipelineContext.Stages[i];
+                pipelineContext.Stages = pipelineContext.Stages.SetItem(i, stage with {
+                    Status = StatusEnum.NotRun,
+                    PipelineRunId = null,
+                    ValidationTimestamp = null
+                });
+            }
+            await context.SaveChangesAsync();
+            return ObjectToJson(new
+            {
+                Pipeline = pipeline,
+                PipelineContext = pipelineContext
+            });
         }
     }   
 }
