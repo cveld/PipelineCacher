@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.Entities", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.MigrationsConsoleApp", "PipelineCacher.MigrationsConsoleApp\PipelineCacher.MigrationsConsoleApp.csproj", "{1C6F0722-9BA1-46A7-A893-DAF6F5228421}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipelineCacher.Tests", "PipelineCacher.Tests\PipelineCacher.Tests.csproj", "{50F8DD1E-272C-476F-BD8C-A2D75013EF4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.Tests", "PipelineCacher.Tests\PipelineCacher.Tests.csproj", "{50F8DD1E-272C-476F-BD8C-A2D75013EF4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

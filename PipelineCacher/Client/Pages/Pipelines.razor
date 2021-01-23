@@ -1,4 +1,7 @@
-﻿@page "/Pipelines/{id?}"
+﻿@page "/Pipelines"
+@using PipelineCacher.Client.Models
+@using PipelineCacher.Entities;
+@inject NavigationManager NavigationManager
 <h3>Pipelines</h3>
 
 <p>
@@ -25,7 +28,74 @@
     <span class="oi oi-target grey" aria-hidden="true"></span>
 </p>
 
+@if (pipelines_loadingStatus == RestCallStatusEnum.NotStarted || pipelines_loadingStatus == RestCallStatusEnum.Getting)
+{
+    <p><em>Loading...</em></p>
+}
+
+@if (pipelines_loadingStatus == RestCallStatusEnum.Failed)
+{
+    <p>Loading of pipelines failed. <button>Retry</button></p>
+    <p>Error message:</p>
+    <p>@ResultMessage</p>
+}
+
+@if (pipelines_loadingStatus == RestCallStatusEnum.Ok)
+{
+    <EditForm Model="pipelinesTableModel">
+        <table>
+            <tr><th></th><th>Organization</th><th>Project</th><th>Pipeline</th><th>Actions</th></tr>
+            <InputRadioGroup @bind-Value="pipelinesTableModel.SelectedPipeline">
+                @foreach (var pipelineItem in pipelines)
+                {
+                    var pipeline = pipelineItem.Pipeline;
+                    var navlink = $"/pipelines/{pipeline.Id}";
+                    var azuredevopsnavlink = $"https://dev.azure.com/{pipeline.OrganizationName}/{pipeline.ProjectName}/_build?definitionId={pipeline.AzdoId}";
+
+                    <tr>
+                        @*<td><InputRadio Value="pipeline.Id"></InputRadio></td>*@
+                        <td></td>
+                        <td>@pipeline.OrganizationName</td>
+                        <td>@pipeline.ProjectName</td>
+                        <td><NavLink href="@navlink">@pipeline.Name</NavLink></td>
+                        <td><ContextMenuTrigger Data="pipelineItem" MouseButtonTrigger="MouseButtonTrigger.Left" MenuId="pipelineMenu"><button class="btn btn-primary"><span class="oi oi-menu" aria-label="menu"></span></button></ContextMenuTrigger></td>
+                    </tr>
+                    }
+            </InputRadioGroup>
+        </table>
+        @*<p>
+            Actions:
+            <ul><li><button @onclick="OpenInAzurePipelinesClicked">Open in Azure Pipelines</button></li></ul>
+        </p>*@
+    </EditForm>
+}
+<p>
+    Quick navigation for debugging:<br>
+    <a href="/pipelines/5/contexts">Contexts of pipeline 5</a><br>
+    <a href="/pipelines/5/contexts/2">Context 2 of pipeline 5</a><br>
+</p>
+
+<ContextMenu Id="pipelineMenu">
+    @{
+        var pipelineItem = context.Data as PipelinesItemModel;
+        var pipeline = pipelineItem.Pipeline;
+        var azureDevOpsnavlink = $"https://dev.azure.com/{pipeline.OrganizationName}/{pipeline.ProjectName}/_build?definitionId={pipeline.AzdoId}";
+    }
+    <Item><NavLink href="@azureDevOpsnavlink">Azure Pipelines <span class="oi oi-external-link" aria-label="external"></span></NavLink></Item>
+    <Item OnClick="@PullDataFromAzurePipelinesClicked" Enabled="@(pipelineItem.LoadingStatus != RestCallStatusEnum.Posting)">
+        @if (pipelineItem.LoadingStatus == RestCallStatusEnum.Posting)
+        {
+            <span class="spinner-border spinner-border-sm" role="status">
+                <span class="sr-only">Pulling data...</span>
+            </span>
+        }
+        Pull data from Azure Pipelines
+    </Item>
+</ContextMenu>
+
 @code {
-    [Parameter]
-    public string Id { get; set; }
+    void OnClick(ItemClickEventArgs e)
+    {
+        Console.WriteLine($"Item Clicked => Menu: {e.ContextMenuId}, MenuTarget: {e.ContextMenuTargetId}, IsCanceled: {e.IsCanceled}, MenuItem: {e.MenuItemElement}, MouseEvent: {e.MouseEvent}");
+    }
 }

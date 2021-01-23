@@ -37,15 +37,28 @@ namespace PipelineCacher.Server.Controllers
             this.context = context;
         }
         [HttpGet]
-        void GetPipelines()
+        public IEnumerable<Pipeline> GetPipelines()
         {
-
+            return context.Pipelines;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pipeline>> GetPipeline(int id)
+        public async Task<Pipeline> GetPipeline(int id)
         {
-            return null;
+            return await context.Pipelines.FindAsync(id);
+        }
+
+        [HttpGet("{id}/contexts")]
+        public object GetPipelineContexts(int id)
+        {
+            return ObjectToJson(context.PipelineContexts.Where(c => c.Pipeline.Id == id));
+        }
+
+        [HttpGet("{id}/contexts/{contextid}")]
+        public async Task<PipelineContext> GetPipelineContextsAsync(int id, int contextid)
+        {
+            (var pipeline, var pipelineContext) = await QueryPipelineAndPipelineContextAsync(id, contextid);
+            return pipelineContext;
         }
 
         // TODO; move shared populate code from pipelinecontext and pipelinebuild into a shared function
@@ -202,8 +215,7 @@ namespace PipelineCacher.Server.Controllers
             var pipeline = new Pipeline
             {
                 ProjectName = command.ProjectName,
-                OrganizationName = command.OrganizationName,
-                Name = command.ProjectName,
+                OrganizationName = command.OrganizationName,                
                 AzdoId = command.AzdoPipelineId.Value
             };
             context.Pipelines.Add(pipeline);
@@ -295,18 +307,19 @@ namespace PipelineCacher.Server.Controllers
         /// <param name="contextid"></param>
         /// <returns></returns>
         [HttpPost("{id}/contexts/{contextid}/parseyaml")]
-        public async Task<object> ParsePipelineContextYaml(int id, int contextid)
+        public async Task<PipelineContext> ParsePipelineContextYaml(int id, int contextid)
         {
             var pipeline = await context.Pipelines.FindAsync(id);
             var pipelineContext = await context.PipelineContexts.FindAsync(contextid);
             
             var s = pipelineContext.SourcecodeTree.Pipeline[pipeline.YamlPath];
-            var deserializer = new DeserializerBuilder()
+
+            /*
+                var deserializer = new DeserializerBuilder()
                 //.JsonCompatible()
                 //.WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
-            /*
             var stringReader = new StringReader(s);
             var yamlpipeline = deserializer.Deserialize(stringReader);
             var jobject = JObject.FromObject(yamlpipeline);
@@ -319,7 +332,7 @@ namespace PipelineCacher.Server.Controllers
                     var stageName = inputStages["stage"];
                     var stageDisplayname = inputStages["displayName"];
                     stages = stages.Add(new Stage
-                    {                        
+                    {        
                         Content = inputStage.ToString(),
                         Status = StatusEnum.NotRun
                     });
@@ -334,12 +347,16 @@ namespace PipelineCacher.Server.Controllers
             var stages = ImmutableList<Stage>.Empty;
             if (inputStages != null)
             {
-                foreach (var inputStage in inputStages)
+                for (int i = 0; i < inputStages.Children.Count; i++)
                 {
+                    var inputStage = inputStages.Children[i];
                     var stageName = inputStage.ScalarValue("stage")?.Value;
                     var stageDisplayname = inputStages.ScalarValue("displayName")?.Value;
                     stages = stages.Add(new Stage
                     {
+                        Position = i,
+                        Name = string.IsNullOrEmpty(stageName) ? null : stageName,
+                        DisplayName = string.IsNullOrEmpty(stageDisplayname) ? null : stageDisplayname,
                         Content = PipelineCacher.Shared.Utilities.Yaml.YamlNodeToString(inputStage),
                         Status = StatusEnum.NotRun
                     });
@@ -348,7 +365,7 @@ namespace PipelineCacher.Server.Controllers
 
             pipelineContext.Stages = stages;
             await context.SaveChangesAsync();
-            return ObjectToJson(stages);
+            return pipelineContext;
         }
 
         [HttpPost("{id}/contexts/{contextid}/populateyaml")]
@@ -473,7 +490,7 @@ namespace PipelineCacher.Server.Controllers
         /// <param name="PatId"></param>
         /// <returns></returns>
         [HttpPost("{id}/populate")]
-        public async Task<object> PopulatePipeline(int id, [FromQuery] [Required] int? PatId)
+        public async Task<Pipeline> PopulatePipeline(int id, [FromQuery] [Required] int? PatId)
         {
             var pipeline = await context.Pipelines.FindAsync(id);            
             var connection = await GetConnection(PatId.Value, pipeline.OrganizationName);
@@ -491,6 +508,7 @@ namespace PipelineCacher.Server.Controllers
             pipeline.YamlPath = process.YamlFilename;
             pipeline.RepositoryId = definition.Repository.Id;
             pipeline.Revision = definition.Revision.Value;
+            pipeline.Name = definition.Name;
 
             await context.SaveChangesAsync();
 
@@ -514,13 +532,7 @@ namespace PipelineCacher.Server.Controllers
             var commitDiffs = await gitClient.GetCommitDiffsAsync(repositoryId, baseVersionDescriptor: gitBaseVersionDescriptor, targetVersionDescriptor: gitTargetVersionDescriptor);
 
             // Serialize output object to http response
-            return ObjectToJson(new
-            {
-                Pipeline = pipeline,
-                CommitDiffs = commitDiffs,
-                Builds = builds,
-                Definition = definition
-            });
+            return pipeline;
             
         }
 

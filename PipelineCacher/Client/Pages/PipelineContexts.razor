@@ -1,0 +1,45 @@
+﻿@using PipelineCacher.Client.Models
+@page "/Pipelines/{id}/Contexts"
+<h3>PipelineContext</h3>
+
+@if (pipelineContexts_loadingStatus == RestCallStatusEnum.NotStarted || pipelineContexts_loadingStatus == RestCallStatusEnum.Getting)
+{
+    <p><em>Loading...</em></p>
+}
+
+@if (pipelineContexts_loadingStatus == RestCallStatusEnum.Failed)
+{
+    <p>Loading of pipeline contexts failed. <button>Retry</button></p>
+    <p>Error message:</p>
+    <p>@ResultMessage</p>
+}
+
+@if (pipelineContexts_loadingStatus == RestCallStatusEnum.Ok)
+{
+    <p>
+        @{}
+        Crumbtrail: <NavLink href="/pipelines">Pipelines</NavLink>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pipelineContext in pipelineContexts)
+            {
+                 
+                var navLink = $"/pipelines/{Id}/contexts/{pipelineContext.Id}";
+                
+                <tr><td>@pipelineContext.Environment</td><td><NavLink href="@navLink">Details</NavLink></td></tr>
+            }
+        </tbody>
+    </table>
+}
+        
+@code {
+
+}
