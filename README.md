@@ -5,7 +5,7 @@ I am currently working on this side project that ultimately will enable Azure Pi
 
 
 # Problem description
-For various workload I am confronted with many Azure Pipelines pipelines that we create to accomodate the desired state.
+For various workloads I am confronted with many Azure Pipelines pipelines that we create to accomodate the desired state.
 
 After having created a couple of pipelines, having run them with some sample inputs, quickly it becomes unclear which pipelines have to run or rerun to change the actual state into the desired state.
 
