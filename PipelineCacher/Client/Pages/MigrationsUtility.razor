@@ -19,8 +19,13 @@ else {
 }
 
 <button @onclick="ApplyMigrationsClicked" class="btn btn-primary">Apply migrations</button>
+
+<p>
+    @error
+</p>
 @code {
     string[] pendingMigrations;
+    string error;
     protected override async Task OnInitializedAsync()
     {
         await Fetch();
@@ -37,6 +42,10 @@ else {
         if (result.IsSuccessStatusCode)
         {
             pendingMigrations = await result.Content.ReadFromJsonAsync<string[]>();
+        }
+        else
+        {
+            error = await result.Content.ReadAsStringAsync();
         }
     }
 }
