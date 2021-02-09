@@ -1,0 +1,29 @@
+﻿@page "/Pipelines/{Id}"
+@using PipelineCacher.Client.Models
+@inject NavigationManager NavigationManager
+<h3>Pipelines</h3>
+<p>Crumbtrail: <NavLink href="/pipelines">Pipelines</NavLink></p>
+@if (pipeline_loadingStatus == RestCallStatusEnum.NotStarted || pipeline_loadingStatus == RestCallStatusEnum.Getting)
+{
+    <p><em>Loading...</em></p>
+}
+
+@if (pipeline_loadingStatus == RestCallStatusEnum.Failed)
+{
+    <p>Loading of pipeline failed. <button>Retry</button></p>
+    <p>Error message:</p>
+    <p>@ResultMessage</p>
+}
+
+@if (pipeline_loadingStatus == RestCallStatusEnum.Ok)
+{
+    <p>Pipeline: @pipeline.Name</p>
+
+    var navlink = $"/pipelines/{Id}/contexts";
+
+    <p>Go to <NavLink href="@navlink">Contexts</NavLink></p>
+}
+
+
+@code {
+}

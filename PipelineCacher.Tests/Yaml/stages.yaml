@@ -1,0 +1,61 @@
+﻿trigger:
+- none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+# There is some stages comment here
+stages:
+- stage: Prep
+  displayName: Prep
+  jobs:
+  - job: myjob
+    displayName: Get state cache
+    steps:
+    - checkout: none
+    - script: echo Hello, world!
+      displayName: 'Run a one-line script'
+    - script: |
+        echo Add other tasks to build, test, and deploy your project.
+        echo See https://aka.ms/yaml
+        exit 1
+      displayName: 'Run a multi-line script'
+      name: mystep
+  - job:
+    variables:
+      A: $[ dependencies.myjob.result ]
+      B: $[ myjob.result ]
+    steps:
+    - script: |
+        echo dependencies.myjob.result: $(A)
+        echo myjob.result: $(B)
+    condition: true
+# There is some comment here
+- stage:
+  displayName: Result
+  dependsOn: [Prep]
+  condition: true
+  # Some comment in the middle
+  variables:
+      A: $[join(';',stageDependencies.Prep)]
+      B: $[join(';',stageDependencies.Prep.outputs)]
+      varFromStageA: $[stageDependencies.Prep.result]
+      varFromstageB: $[stageDependencies.Prep.myjob.result]
+      varFromStageC: $[dependencies.Prep.result]
+  jobs:
+  - job:
+    displayName: Result
+    steps:
+    - checkout: none
+    - script: |
+        # There is also comment inside a script block
+        echo stageDependencies.Prep: $(A)
+        echo stageDependencies.Prep.outputs: $(B)
+        echo stageDependencies.Prep.result: $(varFromStageA)
+        echo stageDependencies.Prep.myjob.result: $(varFromStageB)
+        echo dependencies.Prep.result: $(varFromStageC)
+- stage:
+- stage: ''
+  test: 3
+  test2: "3"
+  test3: '3'

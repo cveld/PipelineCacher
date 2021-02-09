@@ -1,0 +1,66 @@
+﻿@using PipelineCacher.Client.Models
+@using PipelineCacher.Entities
+@page "/Pipelines/{Id}/Contexts/{ContextId}"
+<h3>PipelineContext</h3>
+
+@{
+    var pipelineNavLink = $"/pipelines/{Id}";
+    var pipelineContextsNavLink = $"/pipelines/{Id}/contexts";
+}
+@if (pipelineContext_loadingStatus == RestCallStatusEnum.NotStarted || pipelineContext_loadingStatus == RestCallStatusEnum.Getting)
+{
+<p>
+    Crumbtrail:
+    <NavLink href="/pipelines">Pipelines</NavLink>
+    → <NavLink href="@pipelineNavLink"><i>Loading...</i></NavLink>
+    → <NavLink href="@pipelineContextsNavLink">Contexts</NavLink>
+</p>
+    <p><em>Loading...</em></p>
+}
+
+@if (pipelineContext_loadingStatus == RestCallStatusEnum.Failed)
+{
+<p>
+    Crumbtrail:
+    <NavLink href="/pipelines">Pipelines</NavLink>
+    → <NavLink href="@pipelineNavLink"><i>Could not load name</i></NavLink>
+    → <NavLink href="@pipelineContextsNavLink">Contexts</NavLink>
+</p>
+    <p>Loading of pipeline contexts failed. <button>Retry</button></p>
+    <p>Error message:</p>
+    <p>@ResultMessage</p>
+}
+
+@if (pipelineContext_loadingStatus == RestCallStatusEnum.Ok)
+{
+<p>
+    Crumbtrail: <NavLink href="/pipelines">Pipelines</NavLink>
+    → <NavLink href="@pipelineNavLink">@pipelineContext.Pipeline.Name</NavLink>
+    → <NavLink href="@pipelineContextsNavLink">Contexts</NavLink>
+</p>
+    <p>
+        Environment: @pipelineContext.Environment
+    </p>
+
+    <table>
+        <tr><th>Name</th><th>Status</th></tr>
+        @foreach (var stage in pipelineContext.Stages)
+        {
+
+        <tr><td>@stage.CalculateDisplayName()</td><td>@stage.Status.ToString()</td></tr>
+        }
+    </table>
+}
+
+<button @onclick="ParseYamlClickedAsync" class="btn btn-primary" disabled="@(parseYaml_loadingStatus == RestCallStatusEnum.Posting)">
+    @if (parseYaml_loadingStatus == RestCallStatusEnum.Posting)
+    {
+        <span class="spinner-border spinner-border-sm" role="status">
+            <span class="sr-only">Parsing...</span>
+        </span>
+    } Parse yaml
+</button>
+
+@code {
+
+}
