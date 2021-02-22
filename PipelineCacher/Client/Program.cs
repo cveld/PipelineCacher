@@ -29,7 +29,7 @@ namespace PipelineCacher.Client
             builder.Services.AddMsalAuthentication(options =>
             {
                 builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
-                options.ProviderOptions.DefaultAccessTokenScopes.Add("api://BlazorApp1_Server/user_impersonation");
+                options.ProviderOptions.DefaultAccessTokenScopes.Add("api://BlazorApp1_Server/WeatherForecast.Read");
             });
 
             
