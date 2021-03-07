@@ -15,6 +15,6 @@ namespace PipelineCacher.Entities
         public int? SubjectEntityId { get; set; }
         public string SubjectEntityName { get; set; }
         public int? ObjectEntityId { get; set; }
-        public string? ObjectEntityName { get; set; }
+        public string ObjectEntityName { get; set; }
     }
 }

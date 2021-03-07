@@ -1,3 +1,10 @@
+@implements IDisposable
+@using PipelineCacher.Client.Models
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject UserState userState
+@inject HttpClient Http
+@using PipelineCacher.Shared
+
 <CascadingAuthenticationState>
     <CascadingBlazoredModal>
         <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="true">
@@ -6,8 +13,8 @@
                     <NotAuthorized>
                         @if (!context.User.Identity.IsAuthenticated)
                         {
-                            <RedirectToLogin /> 
-                        <p>NOT YET</p>
+                            <RedirectToLogin />
+                            <p>NOT YET</p>
                         }
                         else
                         {
@@ -24,3 +31,30 @@
         </Router>
     </CascadingBlazoredModal>
 </CascadingAuthenticationState>
+
+@code {
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        if (task.IsCompletedSuccessfully)
+        {
+            var forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+            userState.Test = forecasts.Length.ToString();
+            var taskAwaited = await task;
+            
+            var user = (await task).User;
+            
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        userState.Test = "OnInitialized";
+        Console.WriteLine("test");
+        authenticationStateProvider.AuthenticationStateChanged += this.OnAuthenticationStateChanged;
+    }
+
+    void IDisposable.Dispose()
+    {
+        authenticationStateProvider.AuthenticationStateChanged -= this.OnAuthenticationStateChanged;
+    }
+}

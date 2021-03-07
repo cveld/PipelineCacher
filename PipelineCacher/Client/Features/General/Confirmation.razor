@@ -4,13 +4,13 @@
 @code {
     [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
 
-    void YesClicked()
+    async void YesClicked()
     {
-        BlazoredModal.Close();
+        await BlazoredModal.CloseAsync();
     }
 
-    void NoClicked()
+    async void NoClicked()
     {
-        BlazoredModal.Cancel();
+        await BlazoredModal.CancelAsync();
     }
 }

@@ -5,9 +5,9 @@
 @code {
     [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
 
-    void AddClicked()
+    async void AddClicked()
     {
-        BlazoredModal.Close(ModalResult.Ok(new Organization
+        await BlazoredModal.CloseAsync(ModalResult.Ok(new Organization
         {
             Name = "Test"
         }));

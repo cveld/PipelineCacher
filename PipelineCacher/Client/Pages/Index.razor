@@ -1,7 +1,16 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<h1>Welcome to the Pipeline Cacher Prototype</h1>
 
-Welcome to your new app.
+<p>This app will help you running the minimal amount of pipeline stages to get into the desired state. Use the following process to set up this app:</p>
+<ol>
+    <li>Add an Azure DevOps authorization. Click on <a href="profile">Profile</a>;</li>
+    <li>Add an Azure DevOps organization and project</li>
+    <li>Add one or more pipeline definitions</li>
+    <li>Create pipeline contexts - i.e. pipeline definitions made specific for a set of input parameters and target branch</li>
+    <li>Add pipeline runs</li>    
+</ol>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<p>After completion of these steps the app will help you in determining which pipeline stages still need to be run.</p>
+
+

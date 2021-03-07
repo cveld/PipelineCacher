@@ -1,7 +1,23 @@
 @page "/authentication/{action}"
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-<RemoteAuthenticatorView Action="@Action" />
+@using PipelineCacher.Client.Models
+@using PipelineCacher.Shared
+@*@inject UserState UserState
+@inject HttpClient Http*@
 
-@code{
+<RemoteAuthenticatorView Action="@Action"></RemoteAuthenticatorView>
+@code {
     [Parameter] public string Action { get; set; }
+    //public RemoteAuthenticationState RemoteAuthenticationState { get; set; } = new RemoteAuthenticationState();
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    private void OnLogInSucceeded()
+    {
+        //UserState.Test = "This is after logging in";
+        //StateHasChanged();
+        //var forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        //UserState.Test = forecasts.Length.ToString();
+    }
 }
