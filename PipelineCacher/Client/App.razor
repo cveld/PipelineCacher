@@ -37,20 +37,37 @@
     {
         if (task.IsCompletedSuccessfully)
         {
+            Console.WriteLine("here");
             var forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
             userState.Test = forecasts.Length.ToString();
             var taskAwaited = await task;
-            
+
             var user = (await task).User;
-            
+
         }
     }
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        userState.Test = "OnInitialized";
+        userState.Test = "OnInitializedAsync";
         Console.WriteLine("test");
         authenticationStateProvider.AuthenticationStateChanged += this.OnAuthenticationStateChanged;
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        Console.WriteLine("woot");
+        if (user.Identity.IsAuthenticated)
+        {
+            userState.Test = "Authenticated";
+            Console.WriteLine("woot1");
+        }
+        else
+        {
+            userState.Test = "Not authenticated";
+            Console.WriteLine("woot2");
+        }
+        await Task.Delay(1000);
+        StateHasChanged();
     }
 
     void IDisposable.Dispose()

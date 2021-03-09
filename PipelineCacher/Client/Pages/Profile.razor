@@ -3,14 +3,17 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using System.Security.Claims
 @using PipelineCacher.Client.Models
+@using PipelineCacher.Entities
 
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserState UserState
+@inject HttpClient Http  
 
 <h3>Userstate</h3>
-UserState.Test: @UserState.Test
+UserState.Test: @UserState.Test<br />
+UserState.UserId: @UserState.User?.Id <br />
 
 <h3>Profile</h3>
 
@@ -36,7 +39,8 @@ UserState.Test: @UserState.Test
 
 <h3>ClaimsPrincipal Data</h3>
 
-<button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
+<button @onclick="GetClaimsPrincipalData" class="btn btn-primary m-md-4">Get ClaimsPrincipal Data</button>
+<button @onclick="GetUserProfile" class="btn btn-primary m-md-4">Get user profile</button>
 
 <p>@_authMessage</p>
 
@@ -52,7 +56,10 @@ UserState.Test: @UserState.Test
 
 <p>@_surnameMessage</p>
 
+<p>@UserprofileResult</p>
+
 @code {
+    private string UserprofileResult;
     private string _authMessage;
     private string _surnameMessage;
     private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
@@ -74,11 +81,19 @@ UserState.Test: @UserState.Test
             _authMessage = "The user is NOT authenticated.";
         }
     }
-}
-@code {
+
     private async Task BeginLogout(MouseEventArgs args)
     {
         await SignOutManager.SetSignOutState();
         Navigation.NavigateTo("authentication/logout");
+    }
+
+    private async Task GetUserProfile()
+    {
+        var result = await Http.PostAsync($"api/UserProfile", null);
+        var user = await result.Content.ReadFromJsonAsync<User>();
+        UserprofileResult = user.ToString();
+
+
     }
 }

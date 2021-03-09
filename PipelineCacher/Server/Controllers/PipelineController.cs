@@ -42,6 +42,8 @@ namespace PipelineCacher.Server.Controllers
             return context.Pipelines;
         }
 
+
+
         [HttpGet("{id}")]
         public async Task<Pipeline> GetPipeline(int id)
         {
@@ -51,7 +53,7 @@ namespace PipelineCacher.Server.Controllers
         [HttpGet("{id}/contexts")]
         public object GetPipelineContexts(int id)
         {
-            return ObjectToJson(context.PipelineContexts.Where(c => c.Pipeline.Id == id));
+            return Serializers.ObjectToJson(context.PipelineContexts.Where(c => c.Pipeline.Id == id));
         }
 
         [HttpGet("{id}/contexts/{contextid}")]
@@ -175,7 +177,7 @@ namespace PipelineCacher.Server.Controllers
 
             await context.SaveChangesAsync();
 
-            return ObjectToJson(new
+            return Serializers.ObjectToJson(new
             {
                 pipelineState,
                 PipelineYamlPath = pipeline.YamlPath,                
@@ -195,7 +197,7 @@ namespace PipelineCacher.Server.Controllers
             object timeline = null; // await client.GetBuildTimelineAsync(pipeline.ProjectName, builds[0].Id);
             
             // Serialize output object to http response
-            return ObjectToJson(new
+            return Serializers.ObjectToJson(new
             {
                 Pipeline = pipeline,
                 Timeline = timeline,
@@ -232,21 +234,6 @@ namespace PipelineCacher.Server.Controllers
         void CheckDesiredState()
         {
 
-        }
-
-        /// <summary>
-        /// Explicit serializer from object to json string.
-        /// Required because the build-in serializer does not access properties in inherited classes
-        /// </summary>
-        /// <param name="o"></param>
-        /// <returns></returns>
-        string ObjectToJson(object o)
-        {
-            var json = JsonConvert.SerializeObject(
-                o,
-                Newtonsoft.Json.Formatting.Indented,
-                new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            return json;
         }
 
         /// <summary>
@@ -295,7 +282,7 @@ namespace PipelineCacher.Server.Controllers
 
             pipelineState.Stages = stages;
             await context.SaveChangesAsync();
-            return ObjectToJson(stages);
+            return Serializers.ObjectToJson(stages);
         }
 
 
@@ -411,7 +398,7 @@ namespace PipelineCacher.Server.Controllers
                 }
             }
              */
-            return ObjectToJson(new
+            return Serializers.ObjectToJson(new
             {
                 PipelineContext = pipelineContext,
                 YamlFile = item
@@ -469,7 +456,7 @@ namespace PipelineCacher.Server.Controllers
             }
             await context.SaveChangesAsync();
 
-            return ObjectToJson(new
+            return Serializers.ObjectToJson(new
             {
                 PipelineContext = pipelineContext
             });
@@ -555,7 +542,7 @@ namespace PipelineCacher.Server.Controllers
                 });
             }
             await context.SaveChangesAsync();
-            return ObjectToJson(new
+            return Serializers.ObjectToJson(new
             {
                 Pipeline = pipeline,
                 PipelineContext = pipelineContext

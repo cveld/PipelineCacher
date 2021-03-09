@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
+using PipelineCacher.Client.Models;
+using PipelineCacher.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -10,6 +14,7 @@ using System.Threading.Tasks;
 namespace PipelineCacher.Client
 {
     // Taken from https://github.com/javiercn/BlazorAuthRoles
+    // This class doesn't seem to be able to take a dependency on HttpClientFactory
     public class RolesClaimsPrincipalFactory : AccountClaimsPrincipalFactory<RemoteUserAccount>
     {
         public RolesClaimsPrincipalFactory(IAccessTokenProviderAccessor accessor) : base(accessor)

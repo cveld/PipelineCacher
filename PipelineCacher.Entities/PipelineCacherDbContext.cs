@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RoleBasedAccessControl;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace PipelineCacher.Entities
 {
-    public class PipelineCacherDbContext : DbContext
+    public class PipelineCacherDbContext : RoleBasedAccessControlDbContext
     {
         public PipelineCacherDbContext(DbContextOptions<PipelineCacherDbContext> options) : base(options)
         {
@@ -19,6 +20,9 @@ namespace PipelineCacher.Entities
         public DbSet<Project> Projects { get; set; }
         public DbSet<AuditLog> AuditLog { get; set; }
         public DbSet<Sourcecode> Sourcecode { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<AadUser> AadUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

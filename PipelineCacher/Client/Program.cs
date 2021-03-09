@@ -42,7 +42,7 @@ namespace PipelineCacher.Client
             builder.Services.AddBlazoredModal();
             builder.Services.AddBlazorContextMenu();
             builder.Services.AddOptions();
-            builder.Services.AddScoped<UserState>();
+            builder.Services.AddSingleton<UserState>();
 
             // This does not do anything in the 5.0.3 version of the stack:
             // builder.Services.AddScoped<IClaimsTransformation, UserInfoClaims>();
