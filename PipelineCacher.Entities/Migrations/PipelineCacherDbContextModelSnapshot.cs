@@ -84,6 +84,33 @@ namespace PipelineCacher.Entities.Migrations
                     b.ToTable("AuditLog");
                 });
 
+            modelBuilder.Entity("PipelineCacher.Entities.AzdoToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AccessToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExpiresIn")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TokenType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AzdoTokens");
+                });
+
             modelBuilder.Entity("PipelineCacher.Entities.Group", b =>
                 {
                     b.Property<int>("Id")

@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.MigrationsCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.Tests", "PipelineCacher.Tests\PipelineCacher.Tests.csproj", "{50F8DD1E-272C-476F-BD8C-A2D75013EF4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoleBasedAccessControl", "RoleBasedAccessControl\RoleBasedAccessControl.csproj", "{0864051D-DCDB-4D36-819E-3273B3C71683}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoleBasedAccessControl", "RoleBasedAccessControl\RoleBasedAccessControl.csproj", "{0864051D-DCDB-4D36-819E-3273B3C71683}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,13 @@
+﻿@page "/azdoauthentication/{action}"
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration configuration
+@inject NavigationManager navigationManager
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject HttpClient httpClient
+ 
+<h3>AzdoAuthentication</h3>
+
+<p>@Result</p>
+@code {
+
+}

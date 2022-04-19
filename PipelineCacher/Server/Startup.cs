@@ -32,8 +32,9 @@ namespace PipelineCacher.Server
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddHttpClient();
             services.Configure<PipelineCacherConfig>(Configuration.GetSection(nameof(PipelineCacherConfig)));
-            services.AddDbContext<PipelineCacherDbContext>(options =>
+            services.AddDbContext<PipelineCacherDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("PipelineCacherDatabase")));
             //services.AddDatabaseDeveloperPageExceptionFilter();
             //services.AddSingleton<MigrationsUtility>();

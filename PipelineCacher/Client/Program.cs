@@ -1,4 +1,6 @@
 using Blazored.Modal;
+using Blazored.SessionStorage;
+using BlazorState;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -9,6 +11,7 @@ using PipelineCacher.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,30 +29,36 @@ namespace PipelineCacher.Client
 
             // Supply HttpClient instances that include access tokens when making requests to the server project
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("blazorauth1.ServerAPI"));
-
+            
             //builder.Services.AddAuthorizationCore();
             builder.Services.AddMsalAuthentication(options =>
             {                
                 builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
-                options.ProviderOptions.DefaultAccessTokenScopes.Add("openid");
+                //options.ProviderOptions.DefaultAccessTokenScopes.Add("openid");
                 options.ProviderOptions.DefaultAccessTokenScopes.Add("offline_access");
                 options.ProviderOptions.DefaultAccessTokenScopes.Add("api://BlazorApp_Server/WeatherForecast.Read");
-            });
-
-            
+            });          
 
             //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddBlazoredModal();
+            builder.Services.AddBlazoredSessionStorage();
             builder.Services.AddBlazorContextMenu();
-            builder.Services.AddOptions();
-            builder.Services.AddSingleton<UserState>();
+            builder.Services.AddOptions();            
+            builder.Services.AddBlazorState(
+                (aOptions) =>
+                aOptions.Assemblies =
+                    new Assembly[]
+                    {
+                        typeof(Program).GetTypeInfo().Assembly,
+                    }
+            );
 
             // This does not do anything in the 5.0.3 version of the stack:
             // builder.Services.AddScoped<IClaimsTransformation, UserInfoClaims>();
 
             // Documented at https://docs.microsoft.com/en-us/aspnet/core/blazor/security/webassembly/graph-api?view=aspnetcore-5.0
-            builder.Services.AddApiAuthorization()
-                .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
+            //builder.Services.AddApiAuthorization()
+            //    .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             await builder.Build().RunAsync();
         }

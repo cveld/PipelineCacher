@@ -2,18 +2,22 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using System.Security.Claims
-@using PipelineCacher.Client.Models
+@using PipelineCacher.Client.Features.User
 @using PipelineCacher.Entities
+@using BlazorState
 
-@inject NavigationManager Navigation
+@inherits BlazorStateComponent
+
+@inject NavigationManager navigationManager
 @inject SignOutSessionStateManager SignOutManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject UserState UserState
-@inject HttpClient Http  
+@inject HttpClient Http
 
 <h3>Userstate</h3>
-UserState.Test: @UserState.Test<br />
-UserState.UserId: @UserState.User?.Id <br />
+UserState.Test: @userState.Test
+<br />
+UserState.UserId: @userState.User?.Id
+<br />
 
 <h3>Profile</h3>
 
@@ -39,8 +43,9 @@ UserState.UserId: @UserState.User?.Id <br />
 
 <h3>ClaimsPrincipal Data</h3>
 
-<button @onclick="GetClaimsPrincipalData" class="btn btn-primary m-md-4">Get ClaimsPrincipal Data</button>
-<button @onclick="GetUserProfile" class="btn btn-primary m-md-4">Get user profile</button>
+<button @onclick="GetClaimsPrincipalData" class="btn btn-primary mr-1 mt-1">Get ClaimsPrincipal Data</button>
+<button @onclick="GetUserProfile" class="btn btn-primary mr-1 mt-1">Get user profile</button>
+<button @onclick="AzdoAuthorize" class="btn btn-primary mt-1">Authorize Azure DevOps</button>
 
 <p>@_authMessage</p>
 
@@ -60,6 +65,8 @@ UserState.UserId: @UserState.User?.Id <br />
 
 @code {
     private string UserprofileResult;
+    private UserState userState => GetState<UserState>();
+
     private string _authMessage;
     private string _surnameMessage;
     private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
@@ -85,15 +92,19 @@ UserState.UserId: @UserState.User?.Id <br />
     private async Task BeginLogout(MouseEventArgs args)
     {
         await SignOutManager.SetSignOutState();
-        Navigation.NavigateTo("authentication/logout");
+        navigationManager.NavigateTo("authentication/logout");
     }
 
     private async Task GetUserProfile()
     {
         var result = await Http.PostAsync($"api/UserProfile", null);
         var user = await result.Content.ReadFromJsonAsync<User>();
-        UserprofileResult = user.ToString();
+        UserprofileResult = $"user.Id = {user.Id.ToString()}";
+        await Mediator.Send(new UserState.UpdateUserAction { User = user });
+    }
 
-
+    private void AzdoAuthorize()
+    {
+        navigationManager.NavigateTo("azdoauthentication/authorize");
     }
 }

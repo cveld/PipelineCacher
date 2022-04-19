@@ -10,7 +10,7 @@ using PipelineCacher.Entities;
 namespace PipelineCacher.Entities.Migrations
 {
     [DbContext(typeof(PipelineCacherDbContext))]
-    [Migration("20210308155751_RBAC")]
+    [Migration("20210310204548_RBAC")]
     partial class RBAC
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,6 +84,33 @@ namespace PipelineCacher.Entities.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AuditLog");
+                });
+
+            modelBuilder.Entity("PipelineCacher.Entities.AzdoToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AccessToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExpiresIn")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TokenType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AzdoTokens");
                 });
 
             modelBuilder.Entity("PipelineCacher.Entities.Group", b =>

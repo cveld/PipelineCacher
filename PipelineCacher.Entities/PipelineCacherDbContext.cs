@@ -23,6 +23,7 @@ namespace PipelineCacher.Entities
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<AadUser> AadUsers { get; set; }
+        public DbSet<AzdoToken> AzdoTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

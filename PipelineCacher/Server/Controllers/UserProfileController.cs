@@ -8,13 +8,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-
+using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PipelineCacher.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+    [Authorize]
     public class UserProfileController : ControllerBase
     {
         private PipelineCacherDbContext context;
@@ -23,8 +24,7 @@ namespace PipelineCacher.Server.Controllers
         {
             this.context = context;
         }
-        [HttpPost]
-        [Authorize]
+        [HttpPost]        
         public async Task<string> GetOrCreateUserProfile()
         {
             //var cp = this.User.Identity as ClaimsIdentity;
@@ -51,6 +51,22 @@ namespace PipelineCacher.Server.Controllers
             return Serializers.ObjectToJson(aaduser.User);
         }
         
+        [HttpGet("azdo")]        
+        public async Task<string> GetAzdoProfile([FromQuery][Required] int? azdoTokenId)
+        {
+            var azdoToken = await context.AzdoTokens.FindAsync(azdoTokenId);                    
+            var handler = new JwtSecurityTokenHandler();            
+            var accessToken = handler.ReadJwtToken(azdoToken.AccessToken);
+            var timestamp = int.Parse(accessToken.Claims.First(c => c.Type == "exp").Value);
+            var dt = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+            if (DateTime.Now.AddMinutes(5) > dt)
+            {
+                // TO DO: refresh logic
+            }
 
+            // TO DO: Fetch profile from Azdo
+            // https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.0)
+            return null;
+        }
     }
 }

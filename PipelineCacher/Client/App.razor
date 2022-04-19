@@ -1,9 +1,12 @@
 @implements IDisposable
-@using PipelineCacher.Client.Models
-@inject AuthenticationStateProvider authenticationStateProvider
-@inject UserState userState
-@inject HttpClient Http
+@using PipelineCacher.Client.Features.User
 @using PipelineCacher.Shared
+@using BlazorState
+
+@inherits BlazorStateComponent
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject HttpClient httpClient
 
 <CascadingAuthenticationState>
     <CascadingBlazoredModal>
@@ -33,13 +36,17 @@
 </CascadingAuthenticationState>
 
 @code {
+    private UserState userState => GetState<UserState>();
+
     private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
     {
+        Console.WriteLine("there you go");
         if (task.IsCompletedSuccessfully)
         {
             Console.WriteLine("here");
-            var forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
-            userState.Test = forecasts.Length.ToString();
+            var forecasts = await httpClient.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+            await Mediator.Send(new UserState.ChangeTestValueAction { Value = forecasts.Length.ToString() });
+
             var taskAwaited = await task;
 
             var user = (await task).User;
@@ -49,25 +56,22 @@
 
     protected async override Task OnInitializedAsync()
     {
-        userState.Test = "OnInitializedAsync";
-        Console.WriteLine("test");
-        authenticationStateProvider.AuthenticationStateChanged += this.OnAuthenticationStateChanged;
+        await Mediator.Send(new UserState.ChangeTestValueAction { Value = "OnInitializedAsync" });        
+        authenticationStateProvider.AuthenticationStateChanged += this.OnAuthenticationStateChanged;        
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
-        Console.WriteLine("woot");
+        
         if (user.Identity.IsAuthenticated)
         {
-            userState.Test = "Authenticated";
-            Console.WriteLine("woot1");
+            await Mediator.Send(new UserState.ChangeTestValueAction { Value = "Authenticated" });
+            var result = await httpClient.PostAsync($"api/UserProfile", null);
+            var userEntity = await result.Content.ReadFromJsonAsync<Entities.User>();
+            await Mediator.Send(new UserState.UpdateUserAction { User = userEntity });
         }
         else
         {
-            userState.Test = "Not authenticated";
-            Console.WriteLine("woot2");
+            await Mediator.Send(new UserState.ChangeTestValueAction { Value = "Not authenticated" });
         }
-        await Task.Delay(1000);
-        StateHasChanged();
     }
 
     void IDisposable.Dispose()

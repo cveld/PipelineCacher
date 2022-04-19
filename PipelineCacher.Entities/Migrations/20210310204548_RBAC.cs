@@ -20,6 +20,23 @@ namespace PipelineCacher.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AzdoTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccessToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TokenType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiresIn = table.Column<int>(type: "int", nullable: false),
+                    IsPending = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AzdoTokens", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Entity",
                 columns: table => new
                 {
@@ -306,6 +323,9 @@ namespace PipelineCacher.Entities.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AadUsers");
+
+            migrationBuilder.DropTable(
+                name: "AzdoTokens");
 
             migrationBuilder.DropTable(
                 name: "EntityAncestors");
