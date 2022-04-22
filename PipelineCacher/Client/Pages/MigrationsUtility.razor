@@ -1,5 +1,6 @@
 ﻿@page "/migrationsutility"
-@inject HttpClient Http
+@inject IHttpClientFactory ClientFactory
+
 
 <h3>Migrations Utility</h3>
 
@@ -24,21 +25,33 @@ else {
     @error
 </p>
 @code {
-    string[] pendingMigrations;
+    string[] pendingMigrations = Array.Empty<string>();
     string error;
+    HttpClient httpClient;
+
     protected override async Task OnInitializedAsync()
     {
+        httpClient = ClientFactory.CreateClient("AnonymousClient");
+
         await Fetch();
+
     }
 
     async Task Fetch()
-    {
-        pendingMigrations = await Http.GetFromJsonAsync<string[]>("api/MigrationsUtility");
+    {        
+        try
+        {           
+            pendingMigrations = await httpClient.GetFromJsonAsync<string[]>("api/MigrationsUtility");
+        } catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw ex;
+        }        
     }
 
     async Task ApplyMigrationsClicked()
     {
-        var result = await Http.PostAsync("api/MigrationsUtility/ApplyMigrations", null);
+        var result = await httpClient.PostAsync("api/MigrationsUtility/ApplyMigrations", null);
         if (result.IsSuccessStatusCode)
         {
             pendingMigrations = await result.Content.ReadFromJsonAsync<string[]>();
