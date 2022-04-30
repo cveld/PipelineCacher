@@ -10,18 +10,22 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace PipelineCacher.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserProfileController : ControllerBase
     {
         private PipelineCacherDbContext context;
 
         public UserProfileController(PipelineCacherDbContext context)
         {
+            ITokenAcquisition test;
             this.context = context;
         }
         [HttpPost]        

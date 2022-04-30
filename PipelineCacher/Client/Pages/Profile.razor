@@ -5,11 +5,13 @@
 @using PipelineCacher.Client.Features.User
 @using PipelineCacher.Entities
 @using BlazorState
+@using RoleBasedAccessControl
+
 
 @inherits BlazorStateComponent
 
 @inject NavigationManager navigationManager
-@inject SignOutSessionStateManager SignOutManager
+@* @inject SignOutSessionStateManager SignOutManager *@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject HttpClient Http
 
@@ -63,6 +65,18 @@ UserState.UserId: @userState.User?.Id
 
 <p>@UserprofileResult</p>
 
+<h3>Role Assignments</h3>
+<button @onclick="GetRoleAssignments" class="btn btn-primary mr-1 mt-1">Show role assignments</button>
+@if (_roleAssignments.Count() > 0)
+{
+    <table><thead><tr><th>Column1</th></tr></thead>
+        @foreach (var roleAssignment in _roleAssignments)
+        {
+            <tr><td>@roleAssignment.Id</td></tr>
+        }
+    </table>
+}
+
 @code {
     private string UserprofileResult;
     private UserState userState => GetState<UserState>();
@@ -70,6 +84,7 @@ UserState.UserId: @userState.User?.Id
     private string _authMessage;
     private string _surnameMessage;
     private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+    private IEnumerable<RoleAssignment> _roleAssignments = Enumerable.Empty<RoleAssignment>();
 
     private async Task GetClaimsPrincipalData()
     {
@@ -91,16 +106,28 @@ UserState.UserId: @userState.User?.Id
 
     private async Task BeginLogout(MouseEventArgs args)
     {
-        await SignOutManager.SetSignOutState();
+        //await SignOutManager.SetSignOutState();
         navigationManager.NavigateTo("authentication/logout");
+    }
+
+    private async Task GetRoleAssignments()
+    {
+        var result = await Http.GetAsync($"api/RoleAssignments");
+        if (result.IsSuccessStatusCode)
+        {
+            var _roleAssignments = await result.Content.ReadFromJsonAsync<IEnumerable<RoleAssignment>>();
+        }
     }
 
     private async Task GetUserProfile()
     {
         var result = await Http.PostAsync($"api/UserProfile", null);
-        var user = await result.Content.ReadFromJsonAsync<User>();
-        UserprofileResult = $"user.Id = {user.Id.ToString()}";
-        await Mediator.Send(new UserState.UpdateUserAction { User = user });
+        if (result.IsSuccessStatusCode)
+        {
+            var user = await result.Content.ReadFromJsonAsync<User>();
+            UserprofileResult = $"user.Id = {user.Id.ToString()}";
+            await Mediator.Send(new UserState.UpdateUserAction { User = user });
+        }
     }
 
     private void AzdoAuthorize()

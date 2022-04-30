@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.Server", "PipelineCacher\Server\PipelineCacher.Server.csproj", "{A7EAAC6A-0C20-455F-BC54-9BB8A631B37D}"
 EndProject
@@ -16,6 +16,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.Tests", "PipelineCacher.Tests\PipelineCacher.Tests.csproj", "{50F8DD1E-272C-476F-BD8C-A2D75013EF4B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoleBasedAccessControl", "RoleBasedAccessControl\RoleBasedAccessControl.csproj", "{0864051D-DCDB-4D36-819E-3273B3C71683}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipelineCacher.ClientServices", "PipelineCacher.ClientServices\PipelineCacher.ClientServices.csproj", "{0D97540B-8305-47A0-B825-CA330501B478}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipelineCacher.FakeUser", "PipelineCacher.FakeUser\PipelineCacher.FakeUser.csproj", "{8C4422C1-1EB2-4980-B4A9-4993CEACBDF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{0864051D-DCDB-4D36-819E-3273B3C71683}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0864051D-DCDB-4D36-819E-3273B3C71683}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0864051D-DCDB-4D36-819E-3273B3C71683}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D97540B-8305-47A0-B825-CA330501B478}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D97540B-8305-47A0-B825-CA330501B478}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D97540B-8305-47A0-B825-CA330501B478}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D97540B-8305-47A0-B825-CA330501B478}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C4422C1-1EB2-4980-B4A9-4993CEACBDF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C4422C1-1EB2-4980-B4A9-4993CEACBDF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C4422C1-1EB2-4980-B4A9-4993CEACBDF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C4422C1-1EB2-4980-B4A9-4993CEACBDF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

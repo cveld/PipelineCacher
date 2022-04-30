@@ -39,9 +39,16 @@
     → <NavLink href="@pipelineContextsNavLink">Contexts</NavLink>
 </p>
     <p>
-        Environment: @pipelineContext.Environment
-    </p>
+        Environment: @pipelineContext.Environment<br>
+        Branch: @pipelineContext.TargetBranch
 
+    </p>
+        
+    <h2>Azure DevOps pipeline navigation</h2>
+    <p>Runs summary: <a href="https://dev.azure.com/@pipelineContext.Pipeline.OrganizationName/@pipelineContext.Pipeline.ProjectName/_build?definitionId=@pipelineContext.Pipeline.AzdoId">Summary</a><br>
+    Registration (edit mode): <a href="https://dev.azure.com/@pipelineContext.Pipeline.OrganizationName/@pipelineContext.Pipeline.ProjectName/_apps/hub/ms.vss-build-web.ci-designer-hub?pipelineId=@pipelineContext.Pipeline.AzdoId&branch=@pipelineContext.TargetBranch">Pipeline Registration</a><br>
+    Source code: <a href="https://dev.azure.com/@pipelineContext.Pipeline.OrganizationName/@pipelineContext.Pipeline.ProjectName/_git/@pipelineContext.Pipeline.RepositoryId?path=@pipelineContext.Pipeline.YamlPath&version=GB@(pipelineContext.TargetBranch)">Source Code</a></p>
+    
     <table>
         <tr><th>Name</th><th>Status</th></tr>
         @foreach (var stage in pipelineContext.Stages)
@@ -60,6 +67,22 @@
         </span>
     } Parse yaml
 </button>
+
+<button @onclick="GetPipelineRuns" class="btn btn-primary">Get pipeline runs</button>
+
+@if (azdoPipelineRuns != null)
+{
+    <h2>Pipeline runs</h2>
+    <table>
+        <thead><tr><th>Id</th><th>Number</th><th>Result</th></tr></thead>
+        <tbody>
+    @foreach (var run in azdoPipelineRuns)
+    {
+        <tr><td>@run.Id</td><td>@run.BuildNumber</td><td>@run.Result</td></tr>
+    }
+    </tbody>
+    </table>
+}
 
 @code {
 

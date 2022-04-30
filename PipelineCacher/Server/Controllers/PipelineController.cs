@@ -197,13 +197,9 @@ namespace PipelineCacher.Server.Controllers
             object timeline = null; // await client.GetBuildTimelineAsync(pipeline.ProjectName, builds[0].Id);
             
             // Serialize output object to http response
-            return Serializers.ObjectToJson(new
-            {
-                Pipeline = pipeline,
-                Timeline = timeline,
-                Builds = builds                
-            });           
+            return Serializers.ObjectToJson(builds);           
         }
+        
 
         [HttpGet("{id}/compare/{repoRef}")]
         public async Task Compare(int id, string repoRef)
@@ -482,11 +478,35 @@ namespace PipelineCacher.Server.Controllers
             var pipeline = await context.Pipelines.FindAsync(id);            
             var connection = await GetConnection(PatId.Value, pipeline.OrganizationName);
             var client = connection.GetClient<BuildHttpClient>();
+            //var pipelineclinet = connection.GetClient<PipelineHttpClient>
             var definition = await client.GetDefinitionAsync(pipeline.ProjectName, pipeline.AzdoId); // , revision: 2
+            
             var builds = await client.GetBuildsAsync(pipeline.ProjectName, new int[] { pipeline.AzdoId });
-                   
-            var sourceVersion = builds[0].SourceVersion;
-            var sourceBranch = builds[0].SourceBranch;
+
+            if (builds.Count > 0)
+            {
+                var sourceVersion = builds[0].SourceVersion;
+                var sourceBranch = builds[0].SourceBranch;
+                if (sourceBranch.StartsWith("refs/heads/"))
+                {
+                    sourceBranch = sourceBranch.Substring("refs/heads/".Length);
+                }
+
+                var repositoryId = builds[0].Repository.Id;
+                var gitClient = connection.GetClient<GitHttpClient>();
+
+                GitBaseVersionDescriptor gitBaseVersionDescriptor = new GitBaseVersionDescriptor
+                {
+                    Version = sourceVersion,
+                    VersionType = GitVersionType.Commit
+                };
+                GitTargetVersionDescriptor gitTargetVersionDescriptor = new GitTargetVersionDescriptor
+                {
+                    Version = sourceBranch,
+                    VersionType = GitVersionType.Branch
+                };
+                var commitDiffs = await gitClient.GetCommitDiffsAsync(repositoryId, baseVersionDescriptor: gitBaseVersionDescriptor, targetVersionDescriptor: gitTargetVersionDescriptor);
+            }
             if (definition.Process.Type != ProcessType.Yaml)
             {
                 throw new ArgumentOutOfRangeException($"ProcessType {definition.Process.Type} not supported. Only type 2 (yaml) is supported");
@@ -499,24 +519,9 @@ namespace PipelineCacher.Server.Controllers
 
             await context.SaveChangesAsync();
 
-            if (sourceBranch.StartsWith("refs/heads/"))
-            {
-                sourceBranch = sourceBranch.Substring("refs/heads/".Length);
-            }
-            var repositoryId = builds[0].Repository.Id;
-            var gitClient = connection.GetClient<GitHttpClient>();
+
             
-            GitBaseVersionDescriptor gitBaseVersionDescriptor = new GitBaseVersionDescriptor
-            {
-                Version = sourceVersion,
-                VersionType = GitVersionType.Commit
-            };
-            GitTargetVersionDescriptor gitTargetVersionDescriptor = new GitTargetVersionDescriptor
-            {
-                Version = sourceBranch,
-                VersionType = GitVersionType.Branch
-            };
-            var commitDiffs = await gitClient.GetCommitDiffsAsync(repositoryId, baseVersionDescriptor: gitBaseVersionDescriptor, targetVersionDescriptor: gitTargetVersionDescriptor);
+            
 
             // Serialize output object to http response
             return pipeline;

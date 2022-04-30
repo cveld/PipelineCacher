@@ -2,7 +2,10 @@
 @using PipelineCacher.Client.Models
 @inject NavigationManager NavigationManager
 <h3>Pipelines</h3>
-<p>Crumbtrail: <NavLink href="/pipelines">Pipelines</NavLink></p>
+<p>Crumbtrail: 
+    &lt;organization> 
+    → &lt;project>
+    → <NavLink href="/pipelines">Pipelines</NavLink></p>
 @if (pipeline_loadingStatus == RestCallStatusEnum.NotStarted || pipeline_loadingStatus == RestCallStatusEnum.Getting)
 {
     <p><em>Loading...</em></p>
@@ -17,11 +20,15 @@
 
 @if (pipeline_loadingStatus == RestCallStatusEnum.Ok)
 {
-    <p>Pipeline: @pipeline.Name</p>
+    <p>Pipeline: @pipeline.Name</p>    
+    <p>Yaml file: @pipeline.YamlPath</p>
 
     var navlink = $"/pipelines/{Id}/contexts";
 
     <p>Go to <NavLink href="@navlink">Contexts</NavLink></p>
+    
+    <p>Go to Azure DevOps Pipeline Registration: <a href="https://dev.azure.com/@pipeline.OrganizationName/@pipeline.ProjectName/_build?definitionId=@pipeline.AzdoId">Pipeline Registration</a></p>
+    <p>Go to Azure DevOps Pipeline source code (omitting branch): <a href="https://dev.azure.com/@pipeline.OrganizationName/@pipeline.ProjectName/_git/@pipeline.RepositoryId?path=@pipeline.YamlPath">Source Code</a></p>
 }
 
 

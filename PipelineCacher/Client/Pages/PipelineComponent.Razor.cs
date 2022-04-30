@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PipelineCacher.Client.Models;
+using PipelineCacher.Client.Services;
 using PipelineCacher.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace PipelineCacher.Client.Pages
     {
         [Parameter]
         public string Id { get; set; }
-        [Inject] HttpClient Http { get; set; }
+        [Inject] IApiServerHttpClient ApiServerHttpClient { get; set; }
 
         RestCallStatusEnum pipeline_loadingStatus = RestCallStatusEnum.NotStarted;
         string ResultMessage;
@@ -27,7 +28,7 @@ namespace PipelineCacher.Client.Pages
 
             try
             {
-                var result = await Http.GetFromJsonAsync<Pipeline>($"api/pipeline/{Id}");
+                var result = await ApiServerHttpClient.AnonymousHttpClient.GetFromJsonAsync<Pipeline>($"api/pipeline/{Id}");
                 pipeline = result;
                 pipeline_loadingStatus = RestCallStatusEnum.Ok;
             }

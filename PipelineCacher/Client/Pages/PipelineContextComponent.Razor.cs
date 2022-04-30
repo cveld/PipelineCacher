@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PipelineCacher.Client.Models;
+using PipelineCacher.Client.Services;
 using PipelineCacher.Entities;
+using PipelineCacher.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +19,11 @@ namespace PipelineCacher.Client.Pages
         [Parameter]
         public string ContextId { get; set; }
 
-        [Inject] HttpClient Http { get; set; }
+        [Inject] IApiServerHttpClient ApiServerHttpClient { get; set; }
 
         RestCallStatusEnum pipelineContext_loadingStatus = RestCallStatusEnum.NotStarted;
         PipelineContext pipelineContext;
+        List<AzdoPipelineRun> azdoPipelineRuns;
 
         string ResultMessage;
 
@@ -31,7 +34,7 @@ namespace PipelineCacher.Client.Pages
             
             try
             {
-                var result = await Http.GetFromJsonAsync<PipelineContext>($"api/pipeline/{Id}/contexts/{ContextId}");
+                var result = await ApiServerHttpClient.AnonymousHttpClient.GetFromJsonAsync<PipelineContext>($"api/pipeline/{Id}/contexts/{ContextId}");
                 pipelineContext = result;
                 pipelineContext_loadingStatus = RestCallStatusEnum.Ok;
             }
@@ -47,10 +50,16 @@ namespace PipelineCacher.Client.Pages
         {
             parseYaml_loadingStatus = RestCallStatusEnum.Posting;
             StateHasChanged();
-            var result = await Http.PostAsync($"api/pipeline/{Id}/contexts/{ContextId}/parseyaml", null);
+            var result = await ApiServerHttpClient.AnonymousHttpClient.PostAsync($"api/pipeline/{Id}/contexts/{ContextId}/parseyaml", null);
             parseYaml_loadingStatus = RestCallStatusEnum.Ok;
             var updatedPipelineContext = await result.Content.ReadFromJsonAsync<PipelineContext>();
             pipelineContext = updatedPipelineContext;
+        }
+
+        async Task GetPipelineRuns()
+        {
+            var result = await ApiServerHttpClient.AnonymousHttpClient.GetAsync($"api/pipeline/{Id}/builds?patid=1");
+            azdoPipelineRuns = await result.Content.ReadFromJsonAsync<List<AzdoPipelineRun>>();
         }
     }
 }

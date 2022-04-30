@@ -1,6 +1,7 @@
 ﻿using BlazorContextMenu;
 using Microsoft.AspNetCore.Components;
 using PipelineCacher.Client.Models;
+using PipelineCacher.Client.Services;
 using PipelineCacher.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ namespace PipelineCacher.Client.Pages
     {
         [Parameter]
         public string Id { get; set; }
-        [Inject] HttpClient Http { get; set; }
-
+        [Inject] IApiServerHttpClient ApiServerHttpClient { get; set; }
+        
         RestCallStatusEnum pipelines_loadingStatus = RestCallStatusEnum.NotStarted;
         List<PipelinesItemModel> pipelines;
         string ResultMessage;        
@@ -29,7 +30,7 @@ namespace PipelineCacher.Client.Pages
 
             try
             {
-                var result = await Http.GetFromJsonAsync<Pipeline[]>($"api/pipeline");
+                var result = await ApiServerHttpClient.AnonymousHttpClient.GetFromJsonAsync<Pipeline[]>($"api/pipeline");
                 pipelines = result.Select(p => new PipelinesItemModel
                 {
                     Pipeline = p                    
@@ -61,7 +62,7 @@ namespace PipelineCacher.Client.Pages
             var pipeline = pipelineItem.Pipeline;
             pipelineItem.LoadingStatus = RestCallStatusEnum.Posting;
             StateHasChanged();
-            var result = await Http.PostAsync($"api/pipeline/{pipeline.Id}/populate?PatId=1", null);
+            var result = await ApiServerHttpClient.AnonymousHttpClient.PostAsync($"api/pipeline/{pipeline.Id}/populate?PatId=1", null);
             pipelineItem.LoadingStatus = RestCallStatusEnum.Ok;
             var updatedPipeline = await result.Content.ReadFromJsonAsync<Pipeline>();
             pipelineItem.Pipeline = updatedPipeline;

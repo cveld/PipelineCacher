@@ -1,12 +1,19 @@
 @implements IDisposable
+@using Microsoft.AspNetCore.Http
 @using PipelineCacher.Client.Features.User
+@using PipelineCacher.Client.Services
+@using PipelineCacher.ClientServices
 @using PipelineCacher.Shared
 @using BlazorState
+@using System.Net.Http.Headers
 
 @inherits BlazorStateComponent
 
 @inject AuthenticationStateProvider authenticationStateProvider
-@inject HttpClient httpClient
+@inject IApiServerHttpClient apiServerHttpClient
+@inject NavigationManager navigationManager
+@inject UserProfileAgent userProfileAgent
+@inject IHttpContextAccessor httpContextAccessor
 
 <CascadingAuthenticationState>
     <CascadingBlazoredModal>
@@ -44,7 +51,7 @@
         if (task.IsCompletedSuccessfully)
         {
             Console.WriteLine("here");
-            var forecasts = await httpClient.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+            var forecasts = await apiServerHttpClient.AuthorizedHttpClient.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
             await Mediator.Send(new UserState.ChangeTestValueAction { Value = forecasts.Length.ToString() });
 
             var taskAwaited = await task;
@@ -54,18 +61,25 @@
         }
     }
 
+    private async Task PrepareAuthenticatedClient()
+    {
+        //var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync();
+        //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+    }
+
     protected async override Task OnInitializedAsync()
     {
+        var user2 = httpContextAccessor.HttpContext.User;
+
         await Mediator.Send(new UserState.ChangeTestValueAction { Value = "OnInitializedAsync" });        
         authenticationStateProvider.AuthenticationStateChanged += this.OnAuthenticationStateChanged;        
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        
+
         if (user.Identity.IsAuthenticated)
         {
             await Mediator.Send(new UserState.ChangeTestValueAction { Value = "Authenticated" });
-            var result = await httpClient.PostAsync($"api/UserProfile", null);
-            var userEntity = await result.Content.ReadFromJsonAsync<Entities.User>();
+            var userEntity = await userProfileAgent.Get();            
             await Mediator.Send(new UserState.UpdateUserAction { User = userEntity });
         }
         else
